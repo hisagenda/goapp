@@ -1,0 +1,48 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: goapp-deployment
+spec:
+  selector:
+    matchLabels:
+      run: goapp-deployment
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        run: goapp-deployment
+    spec:
+      containers:
+        - name: ds-container
+          ### REVIEW: Image tag
+          image: docker.io/abiola89/go-appv1:v1
+          imagePullPolicy: IfNotPresent
+          ports:
+            ### REVIEW: Port listened to by the component inside the container
+            - containerPort: 80
+  
+          resources:
+            requests:
+              memory: "500Mi"
+              cpu: "250m"
+            limits:
+              memory: "500Mi"
+              cpu: "250m"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: go-service
+  labels:
+    run: goapp-deployment
+spec:
+  ports:
+    - port: 80
+      protocol: TCP
+      name: http
+      targetPort: 80
+  selector:
+    ### REVIEW something to do here?
+    run: goapp-deployment
